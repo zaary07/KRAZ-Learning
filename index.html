@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KRAZ Learning</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header>
+            <h1>KRAZ Learning</h1>
+        </header>
+
+        <!-- Input area for text -->
+        <div class="input-container">
+            <textarea id="inputText" placeholder="Entrez votre texte ici..."></textarea>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="button-container">
+            <button id="translateButton">Traduire</button>
+            <button id="correctButton">Corriger</button>
+            <button id="voiceCorrectionButton">Vérifier Prononciation</button>
+        </div>
+
+        <!-- Output Section -->
+        <div id="output">
+            <h2>Résultats</h2>
+            <p id="translatedText">Traduction : </p>
+            <p id="correctedText">Correction : </p>
+            <p id="pronunciationFeedback">Prononciation : </p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
