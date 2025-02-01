@@ -40,6 +40,7 @@ function correctText(inputText) {
     })
     .then(response => response.json())
     .then(data => {
+        console.log(data);  // Ajout du log pour vérifier la réponse
         document.getElementById('correctedText').textContent = 'Correction : ' + data.text;
     })
     .catch(error => {
