@@ -1,111 +1,278 @@
-// Variable globale pour stocker la réponse attendue de la traduction
-var expectedTranslation = "";
+// ------------------------------
+// Données réelles par niveau
+// ------------------------------
+const levelData = {
+  A1: {
+    quiz: [
+      {
+        question: "Quel est le mot pour 'Hello' en français ?",
+        options: ["Bonjour", "Salut", "Bonsoir"],
+        answer: "Bonjour"
+      },
+      {
+        question: "Comment dit-on 'Thank you' en français ?",
+        options: ["Merci", "Pardon", "S'il vous plaît"],
+        answer: "Merci"
+      },
+      {
+        question: "Quel est le mot pour 'Goodbye' en français ?",
+        options: ["Au revoir", "Adieu", "Salut"],
+        answer: "Au revoir"
+      }
+      // Vous pouvez ajouter jusqu'à 200 items
+    ],
+    pronunciation: [
+      { phrase: "Bonjour" },
+      { phrase: "Merci" },
+      { phrase: "Au revoir" }
+      // … jusqu'à 200
+    ],
+    reading: [
+      { text: "Je m'appelle Marie et j'aime le chocolat." },
+      { text: "Le chat est sur le canapé." },
+      { text: "Il fait beau aujourd'hui." }
+      // … jusqu'à 200
+    ],
+    translation: [
+      { phrase: "Good morning", expected: "Bonjour" },
+      { phrase: "Thank you", expected: "Merci" },
+      { phrase: "Goodbye", expected: "Au revoir" }
+      // … jusqu'à 200
+    ]
+  },
+  A2: {
+    quiz: [
+      {
+        question: "Quelle est la traduction de 'How are you?' en français ?",
+        options: ["Comment ça va ?", "Ça va bien", "Bonjour"],
+        answer: "Comment ça va ?"
+      },
+      {
+        question: "Comment dit-on 'Please' en français ?",
+        options: ["S'il vous plaît", "Merci", "Excusez-moi"],
+        answer: "S'il vous plaît"
+      },
+      {
+        question: "Quel est le mot pour 'Sorry' en français ?",
+        options: ["Désolé", "Excusez-moi", "Pardon"],
+        answer: "Désolé"
+      }
+      // … jusqu'à 200
+    ],
+    pronunciation: [
+      { phrase: "Comment ça va ?" },
+      { phrase: "S'il vous plaît" },
+      { phrase: "Désolé" }
+      // … jusqu'à 200
+    ],
+    reading: [
+      { text: "Aujourd'hui, il fait un temps magnifique." },
+      { text: "Je vais au supermarché pour acheter des fruits." },
+      { text: "Le matin, je prends un café avec du lait." }
+      // … jusqu'à 200
+    ],
+    translation: [
+      { phrase: "How are you?", expected: "Comment ça va ?" },
+      { phrase: "Please", expected: "S'il vous plaît" },
+      { phrase: "Sorry", expected: "Désolé" }
+      // … jusqu'à 200
+    ]
+  },
+  B1: {
+    quiz: [
+      {
+        question: "Complétez la phrase : 'Je ___ étudiant.'",
+        options: ["suis", "serai", "étais"],
+        answer: "suis"
+      },
+      {
+        question: "Comment traduit-on 'I would like a coffee' en français ?",
+        options: ["Je voudrais un café", "J'ai un café", "Je bois un café"],
+        answer: "Je voudrais un café"
+      },
+      {
+        question: "Quel est le mot pour 'Library' en français ?",
+        options: ["Bibliothèque", "Livre", "Salle"],
+        answer: "Bibliothèque"
+      }
+      // … jusqu'à 200
+    ],
+    pronunciation: [
+      { phrase: "Je suis étudiant" },
+      { phrase: "Je voudrais un café" },
+      { phrase: "Bibliothèque" }
+      // … jusqu'à 200
+    ],
+    reading: [
+      { text: "Ce matin, je suis allé à la bibliothèque pour étudier." },
+      { text: "Le marché était animé et coloré." },
+      { text: "J'apprends le français depuis deux ans." }
+      // … jusqu'à 200
+    ],
+    translation: [
+      { phrase: "I would like a coffee", expected: "Je voudrais un café" },
+      { phrase: "Library", expected: "Bibliothèque" },
+      { phrase: "I am a student", expected: "Je suis étudiant" }
+      // … jusqu'à 200
+    ]
+  },
+  B2: {
+    quiz: [
+      {
+        question: "Que signifie l'expression 'être à l'aise' ?",
+        options: ["Se sentir confortable", "Être rapide", "Être fort"],
+        answer: "Se sentir confortable"
+      },
+      {
+        question: "Complétez la phrase : 'Il ___ à Paris depuis deux ans.'",
+        options: ["habite", "vivait", "habitera"],
+        answer: "habite"
+      },
+      {
+        question: "Comment traduit-on 'innovation' en français ?",
+        options: ["Innovation", "Créativité", "Modernité"],
+        answer: "Innovation"
+      }
+      // … jusqu'à 200
+    ],
+    pronunciation: [
+      { phrase: "Se sentir confortable" },
+      { phrase: "Il habite à Paris" },
+      { phrase: "Innovation" }
+      // … jusqu'à 200
+    ],
+    reading: [
+      { text: "La complexité de la langue française est fascinante et requiert beaucoup de pratique." },
+      { text: "Les innovations technologiques transforment notre quotidien." },
+      { text: "Paris est une ville riche en histoire et en culture." }
+      // … jusqu'à 200
+    ],
+    translation: [
+      { phrase: "It is a beautiful day", expected: "C'est une belle journée" },
+      { phrase: "Innovation", expected: "Innovation" },
+      { phrase: "He has lived in Paris for two years", expected: "Il habite à Paris depuis deux ans" }
+      // … jusqu'à 200
+    ]
+  }
+};
 
-// Variables pour gérer la navigation entre sections
-var sectionOrder = ["quizSection", "pronunciationSection", "readingSection", "writingSection"];
-var currentSectionIndex = 0;
+// ------------------------------
+// Gestion des indices de leçon par niveau
+// ------------------------------
+let currentLessonIndex = {
+  A1: 0,
+  A2: 0,
+  B1: 0,
+  B2: 0
+};
 
-/* =======================================================
-   Fonction principale : charge toutes les sections du niveau
-========================================================== */
+const sectionOrder = ["quizSection", "pronunciationSection", "readingSection", "writingSection"];
+let currentSectionIndex = 0;
+let currentLevel = "A1"; // Valeur par défaut
+
+// ------------------------------
+// Chargement de la leçon en cours pour un niveau donné
+// ------------------------------
 function loadLevel(level) {
-  // Affiche le conteneur de la leçon
+  currentLevel = level;
+  // Affiche le conteneur de la leçon et met à jour le titre
   document.getElementById("lessonContainer").style.display = "block";
-  // Met à jour le titre avec le niveau choisi
   document.getElementById("levelTitle").innerText = "Leçon de Français - Niveau " + level;
-
-  // Charge dynamiquement chaque section selon le niveau
-  loadQuiz(level);
-  loadPronunciation(level);
-  loadReading(level);
-  loadTranslation(level);
-
-  // Initialisation de la navigation : on commence par la première section (quiz)
+  // Réinitialise l'index de section à 0 (quiz)
   currentSectionIndex = 0;
-  sectionOrder.forEach(function(sectionId, index) {
+  loadCurrentSection();
+}
+
+// Charge la section en cours de la leçon (selon currentSectionIndex)
+function loadCurrentSection() {
+  const lessonIdx = currentLessonIndex[currentLevel];
+  switch (sectionOrder[currentSectionIndex]) {
+    case "quizSection":
+      loadQuiz(currentLevel, lessonIdx);
+      break;
+    case "pronunciationSection":
+      loadPronunciation(currentLevel, lessonIdx);
+      break;
+    case "readingSection":
+      loadReading(currentLevel, lessonIdx);
+      break;
+    case "writingSection":
+      loadTranslation(currentLevel, lessonIdx);
+      break;
+  }
+  // Affiche uniquement la section en cours
+  sectionOrder.forEach((sectionId, index) => {
     document.getElementById(sectionId).style.display = (index === currentSectionIndex) ? "block" : "none";
   });
 }
 
-/* =======================================================
-   Section QUIZ
-========================================================== */
-function loadQuiz(level) {
-  var quizContainer = document.getElementById("quizSection");
-  var quizContent = "";
-  switch (level) {
-    case "A1":
-      quizContent = `<p>Quel est le mot pour "Hello" en français ?</p>
-        <button class="btn" onclick="checkAnswer('Bonjour', 'Bonjour')">Bonjour</button>
-        <button class="btn" onclick="checkAnswer('Salut', 'Bonjour')">Salut</button>
-        <button class="btn" onclick="checkAnswer('Bonsoir', 'Bonjour')">Bonsoir</button>`;
-      break;
-    case "A2":
-      quizContent = `<p>Quelle est la traduction de "How are you?" en français ?</p>
-        <button class="btn" onclick="checkAnswer('Comment ça va ?', 'Comment ça va ?')">Comment ça va ?</button>
-        <button class="btn" onclick="checkAnswer('Ça va bien', 'Comment ça va ?')">Ça va bien</button>
-        <button class="btn" onclick="checkAnswer('Salut', 'Comment ça va ?')">Salut</button>`;
-      break;
-    case "B1":
-      quizContent = `<p>Complétez la phrase : "Je ____ un étudiant."</p>
-        <button class="btn" onclick="checkAnswer('suis', 'suis')">suis</button>
-        <button class="btn" onclick="checkAnswer('serai', 'suis')">serai</button>
-        <button class="btn" onclick="checkAnswer('étais', 'suis')">étais</button>`;
-      break;
-    case "B2":
-      quizContent = `<p>Que signifie "Être à l'aise" en français ?</p>
-        <button class="btn" onclick="checkAnswer('Être confortable', 'Se sentir bien')">Être confortable</button>
-        <button class="btn" onclick="checkAnswer('Se sentir bien', 'Se sentir bien')">Se sentir bien</button>
-        <button class="btn" onclick="checkAnswer('Être rapide', 'Se sentir bien')">Être rapide</button>`;
-      break;
-    default:
-      quizContent = "<p>Aucun quiz disponible pour ce niveau.</p>";
+// Passe à la section suivante dans la leçon
+function nextSection() {
+  if (currentSectionIndex < sectionOrder.length - 1) {
+    currentSectionIndex++;
+    loadCurrentSection();
+  } else {
+    // Fin de la leçon, on passe à la suivante (si disponible)
+    alert("Leçon terminée !");
+    currentLessonIndex[currentLevel]++; // Passe à la leçon suivante
+    // Réinitialise l'index de section pour la nouvelle leçon
+    currentSectionIndex = 0;
+    // Vérifier s'il reste des leçons
+    if (currentLessonIndex[currentLevel] < levelData[currentLevel].quiz.length) {
+      loadCurrentSection();
+    } else {
+      alert("Vous avez terminé toutes les leçons du niveau " + currentLevel + " !");
+    }
   }
-  quizContainer.innerHTML = quizContent;
+}
+
+// ------------------------------
+// Fonctions de chargement pour chaque catégorie
+// ------------------------------
+
+// Quiz
+function loadQuiz(level, lessonIdx) {
+  const quizContainer = document.getElementById("quizSection");
+  const quizArray = levelData[level].quiz;
+  if (lessonIdx >= quizArray.length) {
+    quizContainer.innerHTML = "<p>Aucun quiz disponible pour cette leçon.</p>";
+    return;
+  }
+  const item = quizArray[lessonIdx];
+  let content = `<p>${item.question}</p>`;
+  content += item.options.map(option =>
+    `<button class="btn" onclick="checkAnswer('${option}', '${item.answer}')">${option}</button>`
+  ).join('');
+  quizContainer.innerHTML = content;
 }
 
 function checkAnswer(userAnswer, correctAnswer) {
   if (userAnswer === correctAnswer) {
     alert("Bonne réponse !");
+    nextSection();
   } else {
     alert("Mauvaise réponse, réessayez.");
   }
 }
 
-/* =======================================================
-   Section PRONONCIATION
-========================================================== */
-function loadPronunciation(level) {
-  var pronunciationContainer = document.getElementById("pronunciationSection");
-  var phrase = "";
-  switch (level) {
-    case "A1":
-      phrase = "Bonjour";
-      break;
-    case "A2":
-      phrase = "Comment ça va ?";
-      break;
-    case "B1":
-      phrase = "Je suis un étudiant.";
-      break;
-    case "B2":
-      phrase = "Être à l'aise";
-      break;
-    default:
-      phrase = "";
+// Prononciation
+function loadPronunciation(level, lessonIdx) {
+  const pronunciationContainer = document.getElementById("pronunciationSection");
+  const pronArray = levelData[level].pronunciation;
+  if (lessonIdx >= pronArray.length) {
+    pronunciationContainer.innerHTML = "<p>Aucun exercice de prononciation pour cette leçon.</p>";
+    return;
   }
-  // La section affichera la phrase, un bouton pour écouter et un pour prononcer
-  pronunciationContainer.innerHTML = `<p>Teste ta prononciation :</p>
-    <p id="pronunciationPhrase">${phrase}</p>
-    <button class="btn" onclick="playPronunciation()">Écouter</button>
-    <button class="btn" onclick="startPronunciationTest()">Prononcez</button>`;
+  const item = pronArray[lessonIdx];
+  let content = `<p>Teste ta prononciation : "${item.phrase}"</p>`;
+  content += `<button class="btn" onclick="playPronunciation('${item.phrase}')">Écouter</button>`;
+  content += `<button class="btn" onclick="startPronunciationTest('${item.phrase}')">Prononcez</button>`;
+  pronunciationContainer.innerHTML = content;
 }
 
-// Utilisation de la synthèse vocale pour lire la phrase
-function playPronunciation() {
-  var phrase = document.getElementById("pronunciationPhrase").innerText;
+function playPronunciation(phrase) {
   if ('speechSynthesis' in window) {
-    var utterance = new SpeechSynthesisUtterance(phrase);
+    const utterance = new SpeechSynthesisUtterance(phrase);
     utterance.lang = "fr-FR";
     speechSynthesis.speak(utterance);
   } else {
@@ -113,24 +280,22 @@ function playPronunciation() {
   }
 }
 
-// Utilisation de la reconnaissance vocale pour tester la prononciation
-function startPronunciationTest() {
-  // Vérifie la disponibilité de l'API de reconnaissance vocale
-  var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+function startPronunciationTest(expectedPhrase) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) {
     alert("Votre navigateur ne supporte pas la reconnaissance vocale.");
     return;
   }
-  var recognition = new SpeechRecognition();
+  const recognition = new SpeechRecognition();
   recognition.lang = "fr-FR";
   recognition.interimResults = false;
   recognition.maxAlternatives = 1;
   recognition.start();
   recognition.onresult = function(event) {
-    var userSpeech = event.results[0][0].transcript;
-    var expected = document.getElementById("pronunciationPhrase").innerText;
-    if (userSpeech.toLowerCase() === expected.toLowerCase()) {
+    const userSpeech = event.results[0][0].transcript;
+    if (userSpeech.toLowerCase() === expectedPhrase.toLowerCase()) {
       alert("Bonne prononciation !");
+      nextSection();
     } else {
       alert("Mauvaise prononciation. Vous avez dit : " + userSpeech);
     }
@@ -140,38 +305,23 @@ function startPronunciationTest() {
   };
 }
 
-/* =======================================================
-   Section LECTURE
-========================================================== */
-function loadReading(level) {
-  var readingContainer = document.getElementById("readingSection");
-  var text = "";
-  switch (level) {
-    case "A1":
-      text = "Je m'appelle Pierre.";
-      break;
-    case "A2":
-      text = "Aujourd'hui, il fait beau.";
-      break;
-    case "B1":
-      text = "Je suis allé au marché ce matin.";
-      break;
-    case "B2":
-      text = "La complexité de la langue française est fascinante.";
-      break;
-    default:
-      text = "";
+// Lecture
+function loadReading(level, lessonIdx) {
+  const readingContainer = document.getElementById("readingSection");
+  const readingArray = levelData[level].reading;
+  if (lessonIdx >= readingArray.length) {
+    readingContainer.innerHTML = "<p>Aucun texte de lecture pour cette leçon.</p>";
+    return;
   }
-  readingContainer.innerHTML = `<p>Lecture :</p>
-    <p id="readingPhrase">${text}</p>
-    <button class="btn" onclick="playReading()">Écouter la lecture</button>`;
+  const item = readingArray[lessonIdx];
+  let content = `<p>Lecture : "${item.text}"</p>`;
+  content += `<button class="btn" onclick="playReading('${item.text}')">Écouter la lecture</button>`;
+  readingContainer.innerHTML = content;
 }
 
-// Utilisation de la synthèse vocale pour la lecture
-function playReading() {
-  var text = document.getElementById("readingPhrase").innerText;
+function playReading(text) {
   if ('speechSynthesis' in window) {
-    var utterance = new SpeechSynthesisUtterance(text);
+    const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "fr-FR";
     speechSynthesis.speak(utterance);
   } else {
@@ -179,62 +329,42 @@ function playReading() {
   }
 }
 
-/* =======================================================
-   Section TRADUCTION
-========================================================== */
-function loadTranslation(level) {
-  var translationContainer = document.getElementById("writingSection");
-  var phrase = "";
-  switch (level) {
-    case "A1":
-      phrase = "Translate to French: 'Good morning'";
-      expectedTranslation = "Bonjour";
-      break;
-    case "A2":
-      phrase = "Translate to French: 'How are you?'";
-      expectedTranslation = "Comment ça va ?";
-      break;
-    case "B1":
-      phrase = "Translate to French: 'I am going to the market'";
-      expectedTranslation = "Je vais au marché";
-      break;
-    case "B2":
-      phrase = "Translate to French: 'It is a beautiful day'";
-      expectedTranslation = "C'est une belle journée";
-      break;
-    default:
-      phrase = "";
-      expectedTranslation = "";
+// Traduction
+function loadTranslation(level, lessonIdx) {
+  const translationContainer = document.getElementById("writingSection");
+  const translationArray = levelData[level].translation;
+  if (lessonIdx >= translationArray.length) {
+    translationContainer.innerHTML = "<p>Aucun exercice de traduction pour cette leçon.</p>";
+    return;
   }
-  translationContainer.innerHTML = `<p>${phrase}</p>
-    <input type="text" id="userWriting" placeholder="Votre traduction">
-    <button class="btn" onclick="checkWriting()">Vérifier</button>
-    <p id="writingFeedback"></p>`;
+  const item = translationArray[lessonIdx];
+  let content = `<p>Traduisez en français: "${item.phrase}"</p>`;
+  content += `<input type="text" id="userWriting" placeholder="Votre traduction">`;
+  content += `<button class="btn" onclick="checkWriting('${item.expected}')">Vérifier</button>`;
+  content += `<p id="writingFeedback"></p>`;
+  translationContainer.innerHTML = content;
 }
 
-function checkWriting() {
-  var userInput = document.getElementById("userWriting").value;
-  if (userInput.trim().toLowerCase() === expectedTranslation.toLowerCase()) {
-    document.getElementById("writingFeedback").innerText = "Correct!";
+function checkWriting(expected) {
+  const userInput = document.getElementById("userWriting").value;
+  if (userInput.trim().toLowerCase() === expected.toLowerCase()) {
+    document.getElementById("writingFeedback").innerText = "Correct !";
     document.getElementById("writingFeedback").style.color = "green";
+    nextSection();
   } else {
     document.getElementById("writingFeedback").innerText = "Incorrect, essayez encore.";
     document.getElementById("writingFeedback").style.color = "red";
   }
 }
 
-/* =======================================================
-   Fonction NEXT SECTION
-   Cette fonction passe à la section suivante dans l'ordre défini
-========================================================== */
-function nextSection() {
-  // Si nous ne sommes pas à la dernière section
-  if (currentSectionIndex < sectionOrder.length - 1) {
-    currentSectionIndex++;
-    sectionOrder.forEach(function(sectionId, index) {
-      document.getElementById(sectionId).style.display = (index === currentSectionIndex) ? "block" : "none";
-    });
-  } else {
-    alert("Vous avez terminé la leçon !");
-  }
-}
+// ------------------------------
+// Fonction NEXT LEÇON (si besoin)
+// ------------------------------
+// Ici, la fonction nextSection() gère la fin d'une leçon en passant au prochain ensemble de contenus pour le même niveau.
+// Si vous souhaitez, par exemple, passer automatiquement au niveau suivant après avoir terminé toutes les leçons, vous pouvez ajouter une logique ici.
+
+// ------------------------------
+// Exemple de démarrage
+// ------------------------------
+// Pour démarrer au niveau A1, leçon 1 :
+loadLevel("A1");
