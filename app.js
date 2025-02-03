@@ -523,6 +523,13 @@ let currentSectionIndex = 0;
 let currentLevel = "A1"; // Valeur par défaut
 
 // ------------------------------
+// Détection de plateforme iOS
+// ------------------------------
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+
+// ------------------------------
 // Chargement de la leçon en cours pour un niveau donné
 // ------------------------------
 function loadLevel(level) {
@@ -567,7 +574,6 @@ function nextSection() {
     // Fin de la leçon, on passe à la suivante (si disponible)
     alert("Leçon terminée !");
     currentLessonIndex[currentLevel]++; // Passe à la leçon suivante
-    // Réinitialise l'index de section pour la nouvelle leçon
     currentSectionIndex = 0;
     if (currentLessonIndex[currentLevel] < levelData[currentLevel].quiz.length) {
       loadCurrentSection();
@@ -632,6 +638,10 @@ function playPronunciation(phrase) {
 }
 
 function startPronunciationTest(expectedPhrase) {
+  if (isIOS()) {
+    alert("La reconnaissance vocale n'est pas supportée sur iOS. Veuillez utiliser la saisie manuelle.");
+    return;
+  }
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) {
     alert("La reconnaissance vocale n'est pas supportée sur ce navigateur.");
