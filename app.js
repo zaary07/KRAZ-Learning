@@ -502,6 +502,7 @@ const levelData = {
       { phrase: "Easy", expected: "Facile" }
     ]
   },
+  // Les niveaux A2, B1, B2 restent inchangés ou à compléter
   A2: { /* ... */ },
   B1: { /* ... */ },
   B2: { /* ... */ }
@@ -568,7 +569,6 @@ function nextSection() {
     currentLessonIndex[currentLevel]++; // Passe à la leçon suivante
     // Réinitialise l'index de section pour la nouvelle leçon
     currentSectionIndex = 0;
-    // Vérifier s'il reste des leçons
     if (currentLessonIndex[currentLevel] < levelData[currentLevel].quiz.length) {
       loadCurrentSection();
     } else {
@@ -606,7 +606,7 @@ function checkAnswer(userAnswer, correctAnswer) {
   }
 }
 
-// Prononciation
+// Prononciation (niveau A1)
 function loadPronunciation(level, lessonIdx) {
   const pronunciationContainer = document.getElementById("pronunciationSection");
   const pronArray = levelData[level].pronunciation;
@@ -634,7 +634,7 @@ function playPronunciation(phrase) {
 function startPronunciationTest(expectedPhrase) {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) {
-    alert("Votre navigateur ne supporte pas la reconnaissance vocale.");
+    alert("La reconnaissance vocale n'est pas supportée sur ce navigateur.");
     return;
   }
   const recognition = new SpeechRecognition();
@@ -656,7 +656,7 @@ function startPronunciationTest(expectedPhrase) {
   };
 }
 
-// Lecture
+// Lecture (niveau A1)
 function loadReading(level, lessonIdx) {
   const readingContainer = document.getElementById("readingSection");
   const readingArray = levelData[level].reading;
@@ -680,7 +680,7 @@ function playReading(text) {
   }
 }
 
-// Traduction
+// Traduction (niveau A1)
 function loadTranslation(level, lessonIdx) {
   const translationContainer = document.getElementById("writingSection");
   const translationArray = levelData[level].translation;
